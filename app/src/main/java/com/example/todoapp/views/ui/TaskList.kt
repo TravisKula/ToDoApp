@@ -1,20 +1,23 @@
 package com.example.todoapp.views.ui
 
-import android.app.Application
+//import android.app.Application
 import android.app.DatePickerDialog
 import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePickerDialog
+//import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -30,9 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.todoapp.viewmodels.ToDoViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.todoapp.datamodels.Task
+import com.example.todoapp.ui.theme.ToDoAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Calendar
 import java.util.Date
@@ -47,14 +53,18 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
     var dueDate by remember { mutableStateOf("") }
 
     //collect tasks from viewModel
-    val tasks by viewModel.tasks.collectAsState() //Observe the StateFlow
+  //  val tasks by viewModel.tasks.collectAsState() //Observe the StateFlow
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    // Expose the pending and completed tasks as StateFlows
+    val pendingTasks by viewModel.pendingtasks.collectAsState()
+    val completedTasks by viewModel.completedTasks.collectAsState()
+
+    Column(modifier = modifier.padding(16.dp)) { //use the modifier parameter here
         //  Input fields for task name and due date
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-               // .padding(8.dp)
+                .padding(8.dp)
                 .fillMaxWidth()
         ) {
 
@@ -64,8 +74,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                 onValueChange = { taskName = it },
                 label = { Text("Task Name") },
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp)
+                    .weight(2f)
+                    .padding(8.dp)
             )
             
             Spacer(modifier = Modifier.width(8.dp))
@@ -73,7 +83,10 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
 
             DatePickerField(
                 selectedDate = dueDate,
-                onDateSelected = { dueDate = it }
+                onDateSelected = { dueDate = it },
+                modifier = Modifier
+                    .weight(2f)
+                    .padding(8.dp)
             )
 
             // Add Task Button
@@ -86,44 +99,65 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
 
                         // Create a new Task and add it to the ViewModel
                         val task = Task(name = taskName, dueDate = parsedDate ?: Date())
+                       // viewModel.addTask(task)
                         viewModel.addTask(task)
                         // Clear the input fields after adding the task
                         taskName = ""
                         dueDate = ""
                     }
                 },
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier
+                  //  .padding(top = 16.dp)
+                   .weight(1f)
             ) {
                 Text("Add Task")
 
             }
-
-
-            // Display tasks in a scrollable list
-
-            LazyColumn(modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp)) {
-                items(tasks) { task ->
-                    Text(
-                        text = "${task.name} - Due: ${
-                            SimpleDateFormat(
-                                "yyyy-MM-dd",
-                                Locale.getDefault()
-                            ).format(task.dueDate)
-                        }",
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+        // Display tasks in a scrollable list
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            // Pending Tasks
+            items(pendingTasks) { task ->
+                Text(text = "Pending: ${task.name}")
+            }
+            items(completedTasks) { task ->
+                Text(text = "Completed: ${task.name}")
+            }
+
+           /*
+            items(tasks) { task ->
+                Text(
+                    text = "${task.name} - Due: ${
+                        SimpleDateFormat(
+                            "yyyy-MM-dd",
+                            Locale.getDefault()
+                        ).format(task.dueDate)}",
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+            */
         }
-    }
+        }
+
+    //Spacer(modifier = Modifier.height(60.dp))
+
+
 
 }
 @Composable
 fun DatePickerField(
     selectedDate: String,
-    onDateSelected: (String) -> Unit
+    onDateSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -139,46 +173,44 @@ fun DatePickerField(
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     )
+
+    Button(
+        onClick = { datePickerDialog.show() },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+    ) {
+        Text(if (selectedDate.isBlank()) "Select Due Date" else selectedDate)
+    }
+
+    /*
     OutlinedTextField(
         value = selectedDate,
         onValueChange = {}, // no direct editing by user
         label = { Text("Due Date") },
         readOnly = true,
-        modifier = Modifier.clickable { datePickerDialog.show() }
-    )
+        modifier = modifier
+            .clickable { datePickerDialog.show() })
+
+     */
+
 }
 /*
-@Composable
-fun previewToDoViewModel(): ToDoViewModel {
-    // Mock ViewModel for preview
-    val viewModel = ToDoViewModel(Application())
-    val exampleTasks = listOf(
-        Task(name = "Buy groceries", dueDate = Date()),
-        Task(name = "Walk the dog", dueDate = Date())
-    )
-    // Add mock tasks to the ViewModel for preview purposes
-    exampleTasks.forEach { viewModel.addTask(it) }
-    return viewModel
-}
-
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun TaskListPreview() {
-    // Use the mock ViewModel for the preview
-    TaskList(viewModel = previewToDoViewModel())
+    ToDoAppTheme{
+        TaskList(
+            viewModel = ToDoViewModel(),
+            tasks = listOf(
+                Task(name = "task 1 clothes", dueDate = Date()),
+                Task(name = "task 2 laundry", dueDate = Date())
+            ),
+            modifier = Modifier
+
+        )
+    }
 }
 
-*/
-
-/*
-@Preview(showBackground = true)
-@Composable
-fun taskListPreview() {
-    val dummyTasks = listOf(
-        Task(name = "Buy groceries", dueDate = Date()),
-        Task(name = "Prepare meeting notes", dueDate = Date())
-    )
-    TaskList(mockTasks = dummyTasks)
-}
 
  */

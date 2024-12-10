@@ -4,8 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
-//Dao class communicates with db
+//Dao class communicates directly with db
 // created as an interface b/c Dao methods are implemented by room at runtime
 //These are the methods for interacting with the DB
 
@@ -20,10 +21,10 @@ interface TaskDao {
     suspend fun update(task: Task)
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 0 ORDER BY dueDate ASC")
-    fun getPendingTasks(): List<Task>
+    fun getPendingTasks(): Flow<List<Task>> //Return a Flow for real-time updates
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 1 ORDER BY dueDate ASC")
-    suspend fun getCompletedTasks(): List<Task>
+    fun getCompletedTasks(): Flow<List<Task>> //Make this is Flow too
 
     @Query("UPDATE tasks SET isCompleted = 1 WHERE id = :taskId")
     suspend fun markAsCompleted(taskId: Long)
