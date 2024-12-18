@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.todoapp.datamodels.Task
 import com.example.todoapp.datamodels.ToDoDatabase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,17 +29,19 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
     //  val tasks: StateFlow<List<Task>> = _tasks //Expose it as a StateFlow to observe in UI
 
     // Use Room's Flow to automatically observe pending tasks
-    val pendingtasks: StateFlow<List<Task>> = taskDao.getPendingTasks()
-        .stateIn(
+    val pendingtasks: StateFlow<List<Task>> = taskDao.getPendingTasks()  //taskDao = provides the Flow to be converted
+        .stateIn(                               //stateIn converts FLOW from room to StateFlow (LiveData)
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+         //   started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
     // Optional: Add a similar StateFlow for completed tasks
     val completedTasks: StateFlow<List<Task>> = taskDao.getCompletedTasks()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+          //  started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
     //stateIn converts the Flow into a StateFlow that the UI can easily observe.
@@ -51,12 +54,51 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    //Function to mark a task as completed
-    fun markTaskAsCompleted(taskId: Long) {
+    fun deleteTask(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
-            taskDao.markAsCompleted(taskId) // Automatically triggers Flow updates
+            taskDao.delete(task) //delete task
         }
     }
+
+    fun editTask(task: Task) {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskDao.update(task) //edit task using 'update' function in DAO
+        }
+    }
+
+    //Function to mark a task as completed
+    fun markTaskAsCompleted(task: Task) {
+        viewModelScope.launch(Dispatchers.IO) {
+            taskDao.markAsCompleted(task.id) // Use the task ID directly to mark as completed
+            // markAsCompleted is a Room Query
+           // delay(50) //Ensure room updates have time to propogate Dec 16
+        }
+    }
+
+
+    /*
+        fun markTaskAsCompleted(task: Task) {
+            viewModelScope.launch(Dispatchers.IO) {
+                taskDao.update(task.copy(isCompleted = true)) // Update the task in the database
+            }
+        }
+
+    */
+
+/*
+    fun markTaskAsCompleted(task: Task) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Toggle isCompleted and update the task
+            taskDao.update(task.copy(isCompleted = !task.isCompleted))
+        }
+    }
+
+
+*/
+
+
+
+
 /*
     init {
         getPendingTasks()
