@@ -1,6 +1,7 @@
 package com.example.todoapp.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todoapp.datamodels.Task
@@ -66,14 +67,40 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    //Function to mark a task as completed
+    //Function to mark a task as completed 1
+
     fun markTaskAsCompleted(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
             taskDao.markAsCompleted(task.id) // Use the task ID directly to mark as completed
             // markAsCompleted is a Room Query
            // delay(50) //Ensure room updates have time to propogate Dec 16
+
         }
     }
+
+
+    /*
+        //this one works also bas still random ui issue
+    fun markTaskAsCompleted(task: Task) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedTask = task.copy(isCompleted = true)
+            taskDao.update(updatedTask)
+            delay(100) // Ensure database update completes before UI recomposes
+        }
+    }
+*/
+
+    /*
+
+    fun markTaskAsCompleted(task: Task) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val updatedTask = task.copy(isCompleted = true)
+            taskDao.update(updatedTask)
+            Log.d("ToDoViewModel", "Task marked completed: ${updatedTask.id}, ${updatedTask.dueDate}")
+        }
+    }
+
+*/
 
 
     /*

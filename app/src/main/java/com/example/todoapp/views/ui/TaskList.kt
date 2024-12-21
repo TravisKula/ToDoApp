@@ -1,6 +1,7 @@
 package com.example.todoapp.views.ui
 
 //import android.app.Application
+import android.app.Application
 import android.app.DatePickerDialog
 import android.icu.text.SimpleDateFormat
 import android.widget.Space
@@ -38,6 +39,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,6 +64,7 @@ import androidx.room.Delete
 import androidx.room.util.TableInfo
 import com.example.todoapp.datamodels.Task
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.todoapp.ui.theme.ToDoAppTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -177,7 +180,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                  //   onMarkComplete = { viewModel.markTaskAsCompleted(it) }, //Pass function to viewmodel
                     onMarkComplete = { viewModel.markTaskAsCompleted(task) },
                   //  onEdit = { viewModel.editTask(it) }
-                    onEdit = { viewModel.editTask(task)}
+                    onEdit = { task -> viewModel.editTask(task)} ,
+
                 )
             }
 
@@ -192,7 +196,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                     task = task,
                     onDelete = { viewModel.deleteTask(task) },
                     onMarkComplete = { viewModel.markTaskAsCompleted(task) },
-                    onEdit = { viewModel.editTask(task) }
+                    onEdit = { updatedTask -> viewModel.editTask(updatedTask) } ,
+
 
                 )
 
@@ -209,7 +214,10 @@ fun TaskItem(                       //A Task which can be deleted, edited or mar
     task: Task,                 // task (parameter) an OBJECT of type Task (data class - name, dueDate, isCompleted)
     onDelete: () -> Unit,       // a callbackfunction triggered when task is deleted -> Unit means it returns nothing
     onMarkComplete: (Task) -> Unit,  // Tasks task as a parameter b/c requires info (isCompleted) from Task
-    onEdit: (Task) -> Unit,  //Takes Task as a parameter because info (taskName, dueDate) are required to delete
+    onEdit: (Task) -> Unit
+
+
+    //Takes Task as a parameter because info (taskName, dueDate) are required to delete
     // these are callback functions because the are functions passed as arguments to another function
     //modifier: Modifier = Modifier
 
@@ -220,7 +228,7 @@ fun TaskItem(                       //A Task which can be deleted, edited or mar
     var editedText by remember { mutableStateOf((task.name)) } //state variable to hold the current text of the task. Initialized with the name of the task
  //   val updatedTask = remember(task) { task.copy(name = editedText) }
 
-   // val focusRequester = remember { FocusRequester() }
+    val focusRequester = remember { FocusRequester() }  //FocusRequester for the TextField
 
 
     Card(
@@ -237,7 +245,7 @@ fun TaskItem(                       //A Task which can be deleted, edited or mar
             Text(
                 "Due: ${
                     SimpleDateFormat(
-                        "EEE, MMM dd, YYYY",
+                        "yyyy-MM-dd",
                         Locale.getDefault()
                     ).format(task.dueDate)
                 }",
@@ -255,11 +263,11 @@ fun TaskItem(                       //A Task which can be deleted, edited or mar
                 TextField(
                     value = editedText, // shows the current task name (editText)
                     onValueChange = { editedText = it }, //Updates the editedText state when the user types
-              //     enabled = isEditing, //Disable editing unless in editing mode
+                   enabled = isEditing, //enable editing only when in editing mode
                     singleLine = false, //Allows multiline text
                     modifier = Modifier
-                        .fillMaxWidth(), //fills the card's width
-                      //  .focusRequester(focusRequester), // Attach the FocusRequester
+                        .fillMaxWidth() //fills the card's width
+                        .focusRequester(focusRequester), // Attach the FocusRequester
                     textStyle = MaterialTheme.typography.titleMedium.copy(
                         color = MaterialTheme.colorScheme.onSurface
                     ),
@@ -288,13 +296,27 @@ fun TaskItem(                       //A Task which can be deleted, edited or mar
             IconButton(onClick = {
                 //IconButton to toggle between Edit(pencil) and Save(check)
 
-                if (isEditing) {
+                if (isEditing) {   //isEditing becomes True after clicking the checkmark
                     // Save the edited task
+
+
                     onEdit(task.copy(name = editedText))
+               //     viewModel.editTask(task.copy(name = editedText))
+
+
                     // if isEditing = true, it triggers onEdit with the updated task name
 
-                }
+                    // when click the Pencil Icon, isEditing is still false, else block executes
+                    //
+                } else {   //clicking pencil executes else block
 
+
+                    // Request focus when entering editing mode
+                    focusRequester.requestFocus() // places cursor in TextField
+                }
+                // after else block (which put cursor in TextField),
+                // isEditing = false changes to isEditing = True (which changes from pencil to checkmark)
+                // then TextField becomes editable
                 isEditing = !isEditing  //Toggles isEditing state
 
             }) {
@@ -304,6 +326,12 @@ fun TaskItem(                       //A Task which can be deleted, edited or mar
                     modifier = Modifier.weight(1f)
                 )
             }
+                // Request focus automatically when entering editing mode
+                LaunchedEffect(isEditing) {
+                    if (isEditing) {
+                        focusRequester.requestFocus()
+                    }
+                }
                     // Checkbox to mark task as complete or incomplete
 
                 Checkbox(
@@ -357,7 +385,9 @@ fun DatePickerField(
         context,
         { _, year, month, dayOfMonth ->
             // Format the selected date
-            val formattedDate = "${year}-${month + 1}-${dayOfMonth}"
+
+           val formattedDate = "${year}-${month + 1}-${dayOfMonth}"
+     //       val formattedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
             onDateSelected(formattedDate)
         },
         calendar.get(Calendar.YEAR),
