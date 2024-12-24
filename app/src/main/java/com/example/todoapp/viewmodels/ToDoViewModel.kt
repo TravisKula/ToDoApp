@@ -11,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -24,19 +25,45 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
 //    private val taskDao = ToDoDatabase.getDatabase(application).taskDao()
     private val taskDao = ToDoDatabase.getDatabase(application).taskDao() //changed Dec 8
 
+    // State to toggle sort order(ascending = true, descending = false)  // Dec 22/24
+    private val _isAscending = MutableStateFlow(true)
+    val isAscending: StateFlow<Boolean> = _isAscending
+
 
     // Expose tasks as a StateFlow
 //    private val _tasks = MutableStateFlow<List<Task>>(emptyList()) // Store the tasks in a MutableStateFlow
     //  val tasks: StateFlow<List<Task>> = _tasks //Expose it as a StateFlow to observe in UI
 
-    // Use Room's Flow to automatically observe pending tasks
-    val pendingtasks: StateFlow<List<Task>> = taskDao.getPendingTasks()  //taskDao = provides the Flow to be converted
+    // Use Room's Flow to automatically observe pending tasks based on current sort order
+
+    val pendingTasks: StateFlow<List<Task>> =_isAscending.flatMapLatest { ascending ->
+        if (ascending) taskDao.getPendingTasksAsc() else taskDao.getPendingTasksDesc()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+
+
+   /*
+    val pendingTasks: StateFlow<List<Task>> = taskDao.getPendingTasksAsc()  //taskDao = provides the Flow to be converted
         .stateIn(                               //stateIn converts FLOW from room to StateFlow (LiveData)
             scope = viewModelScope,
          //   started = SharingStarted.WhileSubscribed(5000),
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
+*/
+
+    // Observing completed tasks based on the current sort order
+
+    val completedTasks: StateFlow<List<Task>> = _isAscending.flatMapLatest { ascending ->
+        if(ascending) taskDao.getCompletedTasksAsc() else taskDao.getCompletedTasksDesc()
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun toggleSortOrder() {            // Dec 22/24
+        _isAscending.value = !_isAscending.value
+    }
+
+
+    /*
     // Optional: Add a similar StateFlow for completed tasks
     val completedTasks: StateFlow<List<Task>> = taskDao.getCompletedTasks()
         .stateIn(
@@ -45,6 +72,8 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
+
+    */
     //stateIn converts the Flow into a StateFlow that the UI can easily observe.
 
 
