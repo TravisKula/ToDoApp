@@ -302,7 +302,7 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                 Divider(
                     color = DarkCacoa, // Matches text color
                     thickness = 4.dp,
-                    modifier = Modifier.padding(horizontal = 112.dp) // Adds left/right spacing
+                    modifier = Modifier.padding(horizontal = 122.dp) // Adds left/right spacing
                 )
 
 
@@ -337,7 +337,7 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                 Divider(
                     color = DarkCacoa, // Matches text color
                     thickness = 4.dp,
-                    modifier = Modifier.padding(horizontal = 112.dp) // Adds left/right spacing
+                    modifier = Modifier.padding(horizontal = 122.dp) // Adds left/right spacing
                 )
             }
 
@@ -390,11 +390,11 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(6.dp)
             .height(180.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = cardColor), // Use the passed color
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(28.dp)
     ) {
         Column {  //TOP COLUMN for Task and date and Task converted to textfield for Editing
 
