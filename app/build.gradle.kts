@@ -65,6 +65,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.5")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("androidx.room:room-ktx:2.5.1")
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.8")
 
 
     testImplementation(libs.junit)
@@ -74,6 +75,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 
 
 

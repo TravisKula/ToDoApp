@@ -15,67 +15,32 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-//ToDoViewModel
-//Acts as a mediator between UI (TaskList) and TaskDao
-//Contains business logic to fetch or update tasks and exposes these tasks as StateFlow or LiveData for the UI to observe.
 
-
+// Bridge between UI (TaskList) and TaskDao
+// Contains business logic to fetch or update tasks and exposes these tasks as StateFlow or LiveData for the UI to observe.
 
 class ToDoViewModel(application: Application) : AndroidViewModel(application) {
-//    private val taskDao = ToDoDatabase.getDatabase(application).taskDao()
-    private val taskDao = ToDoDatabase.getDatabase(application).taskDao() //changed Dec 8
+    private val taskDao = ToDoDatabase.getDatabase(application).taskDao()
 
-    // State to toggle sort order(ascending = true, descending = false)  // Dec 22/24
+    // State to toggle sort order(ascending = true, descending = false)
     private val _isAscending = MutableStateFlow(true)
     val isAscending: StateFlow<Boolean> = _isAscending
 
 
-    // Expose tasks as a StateFlow
-//    private val _tasks = MutableStateFlow<List<Task>>(emptyList()) // Store the tasks in a MutableStateFlow
-    //  val tasks: StateFlow<List<Task>> = _tasks //Expose it as a StateFlow to observe in UI
-
     // Use Room's Flow to automatically observe pending tasks based on current sort order
-
-    val pendingTasks: StateFlow<List<Task>> =_isAscending.flatMapLatest { ascending ->
+    val pendingTasks: StateFlow<List<Task>> = _isAscending.flatMapLatest { ascending ->
         if (ascending) taskDao.getPendingTasksAsc() else taskDao.getPendingTasksDesc()
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
 
-
-   /*
-    val pendingTasks: StateFlow<List<Task>> = taskDao.getPendingTasksAsc()  //taskDao = provides the Flow to be converted
-        .stateIn(                               //stateIn converts FLOW from room to StateFlow (LiveData)
-            scope = viewModelScope,
-         //   started = SharingStarted.WhileSubscribed(5000),
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
-*/
-
     // Observing completed tasks based on the current sort order
-
     val completedTasks: StateFlow<List<Task>> = _isAscending.flatMapLatest { ascending ->
-        if(ascending) taskDao.getCompletedTasksAsc() else taskDao.getCompletedTasksDesc()
+        if (ascending) taskDao.getCompletedTasksAsc() else taskDao.getCompletedTasksDesc()
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    fun toggleSortOrder() {            // Dec 22/24
-        _isAscending.value = !_isAscending.value
+    fun toggleSortOrder() {
+        _isAscending.value = !_isAscending.value // Flips between true (ascending) and false (descending)
     }
-
-
-    /*
-    // Optional: Add a similar StateFlow for completed tasks
-    val completedTasks: StateFlow<List<Task>> = taskDao.getCompletedTasks()
-        .stateIn(
-            scope = viewModelScope,
-          //  started = SharingStarted.WhileSubscribed(5000),
-            started = SharingStarted.Eagerly,
-            initialValue = emptyList()
-        )
-
-    */
-    //stateIn converts the Flow into a StateFlow that the UI can easily observe.
-
 
     //Function to add a new task
     fun addTask(task: Task) {
@@ -96,83 +61,15 @@ class ToDoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    //Function to mark a task as completed 1
-
+    //Function to mark a task as completed
     fun markTaskAsCompleted(task: Task) {
         viewModelScope.launch(Dispatchers.IO) {
             taskDao.markAsCompleted(task.id) // Use the task ID directly to mark as completed
-            // markAsCompleted is a Room Query
-           // delay(50) //Ensure room updates have time to propogate Dec 16
+
+
 
         }
     }
-
-
-    /*
-        //this one works also bas still random ui issue
-    fun markTaskAsCompleted(task: Task) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updatedTask = task.copy(isCompleted = true)
-            taskDao.update(updatedTask)
-            delay(100) // Ensure database update completes before UI recomposes
-        }
-    }
-*/
-
-    /*
-
-    fun markTaskAsCompleted(task: Task) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val updatedTask = task.copy(isCompleted = true)
-            taskDao.update(updatedTask)
-            Log.d("ToDoViewModel", "Task marked completed: ${updatedTask.id}, ${updatedTask.dueDate}")
-        }
-    }
-
-*/
-
-
-    /*
-        fun markTaskAsCompleted(task: Task) {
-            viewModelScope.launch(Dispatchers.IO) {
-                taskDao.update(task.copy(isCompleted = true)) // Update the task in the database
-            }
-        }
-
-    */
-
-/*
-    fun markTaskAsCompleted(task: Task) {
-        viewModelScope.launch(Dispatchers.IO) {
-            // Toggle isCompleted and update the task
-            taskDao.update(task.copy(isCompleted = !task.isCompleted))
-        }
-    }
-
-
-*/
-
-
-
-
-/*
-    init {
-        getPendingTasks()
-    }
-
-
-    //Function to get pending tasks
-    fun getPendingTasks() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val tasksFromDb = taskDao.getPendingTasks() // Fetch tasks from the DB
-       //     _tasks.value = tasksFromDb // Update LiveData or State to display tasks in the UI
-        }
-    }
-
-
-*/
-
-
 
 
 }

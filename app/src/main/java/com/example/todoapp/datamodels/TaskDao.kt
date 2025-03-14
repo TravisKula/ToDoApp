@@ -7,16 +7,13 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
-//Dao class communicates directly with Roomdb
-// created as an interface b/c Dao methods are implemented by room at runtime
-//These are the methods for interacting with the DB
+// Dao class communicates directly with Room Database
 
-
-@Dao  //marks this Interface as a Data Access Object (DAO) for Room
+@Dao  // Marks this Interface as a Data Access Object (DAO) for Room
 interface TaskDao {
 
     @Insert
-    suspend fun insert(task: Task)  //suspend allows functions to be called with coroutine for efficiency
+    suspend fun insert(task: Task)  // Suspend allows functions to be called within coroutines for efficiency
 
     @Update
     suspend fun update(task: Task)
@@ -24,23 +21,21 @@ interface TaskDao {
     @Delete
     suspend fun delete(task: Task)
 
-        // these are the room queries
+
+    // These are the Room Queries
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 0 ORDER BY dueDate ASC")
-    fun getPendingTasksAsc(): Flow<List<Task>> //Return a FLOW of information from DB for real-time updates
+    fun getPendingTasksAsc(): Flow<List<Task>> // Returns a FLOW of information from DB for real-time updates
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 0 ORDER BY dueDate DESC")
-    fun getPendingTasksDesc(): Flow<List<Task>> //Return a FLOW of information from DB for real-time updates
-
+    fun getPendingTasksDesc(): Flow<List<Task>>
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 1 ORDER BY dueDate ASC")
-    fun getCompletedTasksAsc(): Flow<List<Task>> //Make this is Flow too
-
+    fun getCompletedTasksAsc(): Flow<List<Task>> // Makes this is Flow (real-time updates to the UI)
 
     @Query("SELECT * FROM tasks WHERE isCompleted = 1 ORDER BY dueDate DESC")
-    fun getCompletedTasksDesc(): Flow<List<Task>> //Make this is Flow too
+    fun getCompletedTasksDesc(): Flow<List<Task>>
 
     @Query("UPDATE tasks SET isCompleted = 1 WHERE id = :taskId")
     suspend fun markAsCompleted(taskId: Long)
-
 }

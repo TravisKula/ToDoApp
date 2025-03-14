@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-
+// Class to convert dates to strings and strings to dates for storage in Room Database
 
 class Converters {
 
@@ -27,16 +27,3 @@ class Converters {
 }
 
 
-/*
-private val dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
-@TypeConverter
-fun fromDate(date: LocalDate?): String? {
-    return date?.format(dateFormat)
-}
-
-@TypeConverter
-fun toDate(dateString: String?): LocalDate? {
-    return dateString?.let { LocalDate.parse(it, dateFormat) }
-}
-*/
