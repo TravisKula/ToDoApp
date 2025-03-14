@@ -203,10 +203,10 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp) // Add padding around the card
-                .shadow(8.dp, RoundedCornerShape(12.dp)), // Soft shadow effect
+                .shadow(12.dp, RoundedCornerShape(12.dp)), // Soft shadow effect
             shape = RoundedCornerShape(12.dp), // Rounded corners
             border = BorderStroke(2.dp, Color.Gray), // Border around the card
-            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp) // Elevation effect
+            elevation = CardDefaults.cardElevation(defaultElevation = 22.dp) // Elevation effect
         ) {
 
             Row(
@@ -301,8 +301,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
 
                 Divider(
                     color = DarkCacoa, // Matches text color
-                    thickness = 4.dp,
-                    modifier = Modifier.padding(horizontal = 122.dp) // Adds left/right spacing
+                    thickness = 2.dp,
+                    modifier = Modifier.padding(horizontal = 160.dp) // Adds left/right spacing
                 )
 
 
@@ -336,8 +336,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                 )
                 Divider(
                     color = DarkCacoa, // Matches text color
-                    thickness = 4.dp,
-                    modifier = Modifier.padding(horizontal = 122.dp) // Adds left/right spacing
+                    thickness = 2.dp,
+                    modifier = Modifier.padding(horizontal = 160.dp) // Adds left/right spacing
                 )
             }
 
