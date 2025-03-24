@@ -7,9 +7,11 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
-// Dao class communicates directly with Room Database
-
-@Dao  // Marks this Interface as a Data Access Object (DAO) for Room
+/**
+ * Data Access Object (DAO) for performing CRUD operations on the Task entity.
+ * Provides methods to insert, update, delete, and query tasks from the Room database.
+ */
+@Dao
 interface TaskDao {
 
     @Insert
@@ -20,7 +22,6 @@ interface TaskDao {
 
     @Delete
     suspend fun delete(task: Task)
-
 
     // These are the Room Queries
 

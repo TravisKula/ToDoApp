@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -38,10 +37,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,116 +53,70 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todoapp.datamodels.Task
-import com.example.todoapp.ui.theme.BackgroundGray
-import com.example.todoapp.ui.theme.BigShoulders
 import com.example.todoapp.ui.theme.BigShouldersBold
-import com.example.todoapp.ui.theme.BigShouldersExtraBold
-import com.example.todoapp.ui.theme.CharcoalGray
-import com.example.todoapp.ui.theme.Cinnamon
-import com.example.todoapp.ui.theme.Copper
-import com.example.todoapp.ui.theme.CreamyWhite
-import com.example.todoapp.ui.theme.DarkBrown
 import com.example.todoapp.ui.theme.DarkCacoa
-import com.example.todoapp.ui.theme.DeepCaramel
 import com.example.todoapp.ui.theme.DeepCharcoal
-import com.example.todoapp.ui.theme.DeepCoral
-import com.example.todoapp.ui.theme.DeepNavy
-import com.example.todoapp.ui.theme.DeepPlum
-import com.example.todoapp.ui.theme.DeepRed
-import com.example.todoapp.ui.theme.DullBrown
 import com.example.todoapp.ui.theme.DustyCharcoal
-import com.example.todoapp.ui.theme.DustyPurple
-import com.example.todoapp.ui.theme.EarthyTeracotta
-import com.example.todoapp.ui.theme.JadeGreen
-import com.example.todoapp.ui.theme.Lavendar
-import com.example.todoapp.ui.theme.LightBeige
-import com.example.todoapp.ui.theme.LightBrown
-import com.example.todoapp.ui.theme.LighterGray
-import com.example.todoapp.ui.theme.MaroonButton
-import com.example.todoapp.ui.theme.MediumBrown
-import com.example.todoapp.ui.theme.MidnightBlue
-import com.example.todoapp.ui.theme.MintGreen
-import com.example.todoapp.ui.theme.MutedClay
-import com.example.todoapp.ui.theme.MutedOrange
-import com.example.todoapp.ui.theme.MutedTaupe
-import com.example.todoapp.ui.theme.MutedTeal
-import com.example.todoapp.ui.theme.NeutralPink
 import com.example.todoapp.ui.theme.NotoSerif
 import com.example.todoapp.ui.theme.NotoSerifItalic
 import com.example.todoapp.ui.theme.PastelBlue
 import com.example.todoapp.ui.theme.PastelPink
 import com.example.todoapp.ui.theme.PastelYellow
-import com.example.todoapp.ui.theme.Purple80
-import com.example.todoapp.ui.theme.RustyCaramel
-import com.example.todoapp.ui.theme.RustyOrange
-import com.example.todoapp.ui.theme.SoftBeige
-import com.example.todoapp.ui.theme.SoftCoral
-import com.example.todoapp.ui.theme.StoneGray
-import com.example.todoapp.ui.theme.VeryLightGray
-import com.example.todoapp.ui.theme.WarmBeige
-import com.example.todoapp.ui.theme.WarmCacao
-import com.example.todoapp.ui.theme.WarmGray
-import com.example.todoapp.ui.theme.WarmOrange
-import com.example.todoapp.ui.theme.WarmTaupe
 import com.example.todoapp.viewmodels.ToDoViewModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-
 // UI with scrollable list for tasks
-
 @Composable
 fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
 
     // State variables for task name and due date
-    var taskName by remember { mutableStateOf("") }  // variable (var-mutable) it's value can change. remember - store value across recompositions
+    var taskName by remember { mutableStateOf("") }
     var dueDate by remember { mutableStateOf("") } // mutableStateOf - creates a state object that holds a value (makes variable observable and changeable)
     // initiallized with empty string
-
 
     // Expose the pending and completed tasks as StateFlows
     val isAscending by viewModel.isAscending.collectAsState()
     val pendingTasks by viewModel.pendingTasks.collectAsState(initial = emptyList())   // collectAsState listens to StateFlow and recomposes the UI whenever new data is emitted
     val completedTasks by viewModel.completedTasks.collectAsState(initial = emptyList())
 
-    // Obtain the keyboard controller Dec 21/24
 
-    Column(modifier = modifier
-        .fillMaxSize() // Ensures it covers full screen
-        .border(6.dp, color = Color.Black,
-            shape = RoundedCornerShape(24.dp) // Rounds the interior corners
-    )
-        .clip(RoundedCornerShape(24.dp)) // Ensures content inside follows rounded shape
+    Column(
+        modifier = modifier
+            .fillMaxSize() // Ensures column covers full screen
+            .border(
+                6.dp, color = Color.Black,
+                shape = RoundedCornerShape(24.dp) // Rounds the interior corners
+            )
+            .clip(RoundedCornerShape(24.dp)) // Ensures content inside follows rounded shape
 
             .background(
-            brush = Brush.linearGradient(
-            colors = listOf(Color(0xFFFFF59D), Color(0xFFD1C4E9)), // Pastel Yellow → Lavender
-        start = Offset(0f, 0f), // Top-left
-        end = Offset(1000f, 1000f) // Bottom-right (adjust based on screen size)
-    )
+                brush = Brush.linearGradient(
+                    colors = listOf(
+                        Color(0xFFFFF59D),
+                        Color(0xFFD1C4E9)
+                    ), // Pastel Yellow → Lavender
+                    start = Offset(0f, 0f), // Top-left
+                    end = Offset(1000f, 1000f) // Bottom-right (adjust based on screen size)
+                )
             )
-        .padding(16.dp)
+            .padding(16.dp)
 
-    ) { //use the modifier parameter here
-        //  Input fields for task name and due date
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-               // .padding(8.dp)
+                // .padding(8.dp)
                 .fillMaxWidth()
 
         ) {
@@ -178,12 +129,11 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .padding(2.dp)
                     .fillMaxWidth()
-                 //   .width(375.dp)
                     .height(65.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .border(width = 1.dp, color = Color.Black),
 
-              //  colors = TextFieldDefaults.colors(PastelBlue)
+                //  colors = TextFieldDefaults.colors(PastelBlue)
 
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = Color.Black, // Text color when focused
@@ -197,14 +147,14 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                 )
             )
         }
-          Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp) // Add padding around the card
+                .padding(12.dp)
                 .shadow(12.dp, RoundedCornerShape(12.dp)), // Soft shadow effect
-            shape = RoundedCornerShape(12.dp), // Rounded corners
+            shape = RoundedCornerShape(12.dp),
             border = BorderStroke(2.dp, Color.Gray), // Border around the card
             elevation = CardDefaults.cardElevation(defaultElevation = 22.dp) // Elevation effect
         ) {
@@ -246,10 +196,10 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                             val parsedDate =
                                 SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(dueDate)
 
-                            // Create a new Task and add it to the ViewModel
+                            // Creates a new Task and add it to the ViewModel
                             val task = Task(name = taskName, dueDate = parsedDate ?: Date())
                             viewModel.addTask(task)
-                            // Clear the input fields after adding the task
+                            // Clears the input fields after adding the task
                             taskName = ""
                             dueDate = ""
                         }
@@ -269,11 +219,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
 
                         )
                 }
-
             }
-
-
-            }  // End of Button Row
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -287,7 +234,7 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
         ) {
 
             // Pending Tasks
-            item { //item function adds a single composable to LC (here a header)
+            item {
                 Text(
                     "Pending Tasks",
                     style = TextStyle(
@@ -305,22 +252,18 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(horizontal = 160.dp) // Adds left/right spacing
                 )
 
-
             }
             items(
                 pendingTasks,
-                key = { it.id }) { task -> //renders a list of pendingTasks, provides tasks unique ID key
+                key = { it.id }) { task -> // Renders a list of pendingTasks, provides tasks unique ID key
                 TaskItem(
-                    //calling TaskItem function
                     task = task,
                     onDelete = { viewModel.deleteTask(task) },
                     onMarkComplete = { viewModel.markTaskAsCompleted(task) },
                     onEdit = { task -> viewModel.editTask(task) },
-                //    cardColor = WarmOrange // Pending task color
                     cardColor = PastelYellow
-                    )
+                )
             }
-
 
             // Completed Tasks
             item {
@@ -331,7 +274,8 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                     style = TextStyle(
                         fontFamily = NotoSerif,
                         fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold),
+                        fontWeight = FontWeight.Bold
+                    ),
                     color = DarkCacoa,
                 )
                 Divider(
@@ -349,14 +293,13 @@ fun TaskList(viewModel: ToDoViewModel, modifier: Modifier = Modifier) {
                     onEdit = { updatedTask -> viewModel.editTask(updatedTask) },
                     cardColor = PastelPink
 
-                    )
+                )
 
             }
 
         }
-    } // End of Column
+    }
 }
-
 
 @Composable
 fun TaskItem( // A Task which can be deleted, edited or marked as complete
@@ -406,18 +349,17 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                 horizontalArrangement = Arrangement.Center
             ) {
 
-
                 Text(
                     text = "Due Date:",
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                         fontFamily = BigShouldersBold,
                         fontSize = 16.sp,
-                     //   fontWeight = FontWeight.Thin,
-                    color = DeepCharcoal,
-                    textAlign = TextAlign.Center
+                        //   fontWeight = FontWeight.Thin,
+                        color = DeepCharcoal,
+                        textAlign = TextAlign.Center
                         //Add a small space between Text and TextField
-                )
+                    )
                 )
 
                 TextField(
@@ -431,13 +373,13 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                         //   .fillMaxWidth()
                         //  .padding(2.dp)
                         .focusRequester(focusRequester),
-                    textStyle =  TextStyle(
+                    textStyle = TextStyle(
                         fontFamily = BigShouldersBold,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Thin,
 
-                  //  textStyle = MaterialTheme.typography.bodyMedium.copy(
-                    //    color = MaterialTheme.colorScheme.onSurface
+                        //  textStyle = MaterialTheme.typography.bodyMedium.copy(
+                        //    color = MaterialTheme.colorScheme.onSurface
                     ),
 
                     colors = TextFieldDefaults.colors(
@@ -476,7 +418,7 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                         .fillMaxWidth() // Fills the card's width
                         .focusRequester(focusRequester), // Attaches the FocusRequester
 
-                    textStyle =  TextStyle(
+                    textStyle = TextStyle(
                         fontFamily = NotoSerifItalic,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Thin,
@@ -498,7 +440,6 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                 )
             }
 
-
             Spacer(modifier = Modifier.width(16.dp))
 
             Row {    // Bottom row for Icons
@@ -519,7 +460,6 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                         onEdit(task.copy(name = editedText.text, dueDate = newDueDate)) //Dec 21
 
                     } else {   //clicking pencil executes else block
-
 
                         // Request focus and set cursor to end when entering editing mode
                         focusRequester.requestFocus() // places cursor in TextField
@@ -544,13 +484,11 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                 // Request focus automatically and set cursor to the end when entering editing mode
 
                 // Checkbox to mark task as complete or incomplete
-
                 Checkbox(
                     checked = task.isCompleted,
                     onCheckedChange = { onMarkComplete(task) },
                     modifier = Modifier.padding(4.dp)
                 )
-
 
                 //Delete Button Icon
                 IconButton(onClick = onDelete) {
@@ -562,7 +500,6 @@ fun TaskItem( // A Task which can be deleted, edited or marked as complete
                 }
             }
         }
-
     }
 }
 
@@ -576,11 +513,10 @@ fun DatePickerField(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
-            // Use SimpleDateFormat for consistency
+            // Uses SimpleDateFormat for consistency
             val calendar = Calendar.getInstance()
             calendar.set(year, month, dayOfMonth)
             val formattedDate =
@@ -596,14 +532,12 @@ fun DatePickerField(
     Button(
         onClick = { datePickerDialog.show() },
         modifier = modifier
-           // .fillMaxWidth()
+            // .fillMaxWidth()
             .height(100.dp)
             .width(150.dp)
             .padding(4.dp),
         shape = RoundedCornerShape(22.dp),
         colors = ButtonDefaults.buttonColors(containerColor = DarkCacoa)
-
-
 
     ) {
         Text(
@@ -614,17 +548,5 @@ fun DatePickerField(
 }
 
 
-/*
-@Composable
-@Preview
-fun PreviewTaskItem() {
-    val task = Task("Sample Task", Date())
-    TaskItem(
-        task = task,
-        onDelete = {},
-        onMarkComplete = {},
-        onEdit = {}
-    )
-}
-*/
+
 

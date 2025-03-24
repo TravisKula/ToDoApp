@@ -5,10 +5,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import com.example.todoapp.R
-
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -21,19 +19,11 @@ val Typography = Typography(
     ),
 )
 val NotoSerif = FontFamily(
-        Font(R.font.notoserif_variable) // Match the file name
-        )
+    Font(R.font.notoserif_variable)
+)
 
 val NotoSerifItalic = FontFamily(
-    Font(R.font.notoserif_italic) // Match the file name
-)
-
-val BigShoulders = FontFamily(
-    Font(R.font.big_shoulders)
-)
-
-val BigShouldersExtraBold = FontFamily(
-    Font(R.font.big_shoulders_extrabold)
+    Font(R.font.notoserif_italic)
 )
 
 val BigShouldersBold = FontFamily(
