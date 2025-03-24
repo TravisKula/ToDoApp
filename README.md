@@ -6,12 +6,12 @@
 ---
 
 ## ✨ Key Features
-✅ **Add, edit, and delete tasks**
-✅ **Mark tasks as completed**
-✅ **Sort tasks in ascending/descending order**
-✅ **Save tasks persistently using Room Database**
-✅ **Intuitive and modern UI with Jetpack Compose**
-✅ **Uses LazyColumn for smooth scrolling task lists**
+- ✅ **Add, edit, and delete tasks**
+- ✅ **Mark tasks as completed**
+- ✅ **Sort tasks in ascending/descending order**
+- ✅ **Save tasks persistently using Room Database**
+- ✅ **Intuitive and modern UI with Jetpack Compose**
+- ✅ **Uses LazyColumn for smooth scrolling task lists**
 
 ---
 
