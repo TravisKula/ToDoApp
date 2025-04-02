@@ -66,6 +66,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("androidx.room:room-ktx:2.5.1")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.8")
+    implementation(libs.androidx.ui.test.junit4.android)
 
 
     testImplementation(libs.junit)
@@ -76,9 +77,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
-
-
     val room_version = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room_version")
@@ -86,6 +84,25 @@ dependencies {
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
     // See Add the KSP plugin to your project
     ksp("androidx.room:room-compiler:$room_version")
+
+    // JUnit 4 for unit testing
+    testImplementation("junit:junit:4.13.2")
+
+    // Mockito for mocking dependencies (version 3.x for Java 1.8 compatibility)
+    testImplementation ("org.mockito:mockito-core:3.12.4")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:3.1.0")
+
+    // Kotlin Coroutines test (for Flow & suspend functions testing)
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+
+    // AndroidX Test JUnit (for testing ViewModel & LiveData)
+    testImplementation ("androidx.test.ext:junit-ktx:1.2.1")
+
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.7.8")
+    debugImplementation ("androidx.compose.ui:ui-test-manifest:1.7.8")
+
 
 }
 

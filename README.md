@@ -2,6 +2,7 @@
 
 ### A simple and intuitive To-Do application built with **Kotlin and Jetpack Compose**.
 ### Features task management with local storage using **Room Database**.
+### Includes UI and Unit Testing with **JUnit, Mockito and Jetpack Compose UI Testing**.
 
 ---
 
@@ -20,6 +21,9 @@
 - **Kotlin** – Primary programming language
 - **Jetpack Compose** – Modern UI toolkit for declarative UI
 - **Room Database** – Local storage for tasks
+- **JUnit** - Unit tests for ViewModel logic
+- **Mockito** - For mocking dependencies in unit tests
+- **Compose UI Testing** - UI automation for Jetpack Compose
 - **Architecture** – MVVM (Model-View-ViewModel)
 - **State Management** – Using ViewModel and StateFlow
 - **Material Design 3** – UI components for a sleek look
@@ -40,6 +44,8 @@
 - 📌 **Implement Notifications for task reminders**
 - ☁️ **Add Firebase for cloud sync**
 - 🎨 **Improve UI animations**
+- 🛠️ **Fix failing tests to improve app stability and responsiveness** 
+
 
 ___
 
